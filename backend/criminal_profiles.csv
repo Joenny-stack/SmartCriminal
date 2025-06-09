@@ -1,0 +1,4 @@
+name,crime_type,crime_grade,location,arrest_date,is_repeat_offender
+Zinedine_Zidane,Robbery,High,Masvingo,11/12/2023,TRUE
+Will_Smith,Fraud,Moderate,Harare,9/25/2022,FALSE
+Vicente_Fox,Assault,Low,Bulawayo,1/15/2024,TRUE

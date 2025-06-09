@@ -1,0 +1,7 @@
+# Ignore Python virtual environment folder
+venv310/
+backend/venv/
+images/
+fronteend/node_modules/
+fronteend/node_modules/
+embeddings/
