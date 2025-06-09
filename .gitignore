@@ -1,7 +1,10 @@
 # Ignore Python virtual environment folder
 venv310/
 backend/venv/
+backend/uploads/
 images/
 fronteend/node_modules/
 fronteend/node_modules/
 embeddings/
+facial_model.h5
+facial_model.keras
