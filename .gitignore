@@ -3,7 +3,6 @@ venv310/
 backend/venv/
 backend/uploads/
 backend/app/facial_model.h5
-images/
 fronteend/node_modules/
 fronteend/node_modules/
 embeddings/
