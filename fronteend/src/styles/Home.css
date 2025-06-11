@@ -111,6 +111,58 @@
 .home-footer-link:hover {
   text-decoration: underline;
 }
+/* Add responsive flex layout for hero section */
+@media (min-width: 900px) {
+  .home-hero-row {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 32px;
+    width: 100%;
+    max-width: 1190px;
+    margin: 0 auto;
+  }
+  .home-hero-title {
+    flex: 0 1 60%;
+    min-width: 260px;
+    margin-bottom: 0;
+    margin-right: 32px;
+    display: inline-block;
+  }
+  .home-hero-subtitle {
+    flex: 0 1 40%;
+    min-width: 200px;
+    margin-bottom: 0;
+    display: inline-block;
+  }
+  .home-hero-btn-row {
+    width: 100%;
+    margin-top: 32px;
+    display: flex;
+    justify-content: flex-start;
+  }
+}
+@media (max-width: 899px) {
+  .home-hero-row {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  .home-hero-title, .home-hero-subtitle {
+    margin-bottom: 0;
+    width: 100%;
+    display: block;
+  }
+  .home-hero-btn-row {
+    width: 100%;
+    margin-top: 24px;
+    display: flex;
+    justify-content: flex-start;
+  }
+}
 @media (max-width: 900px) {
   .home-main {
     flex-direction: column;

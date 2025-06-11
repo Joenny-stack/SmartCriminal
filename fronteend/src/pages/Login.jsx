@@ -1,5 +1,5 @@
-import React, { useState, useContext } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import React, { useContext, useState } from "react";
+import { useNavigate, Link, Navigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import { login as apiLogin } from "../api/index";
 import bgImage from "../assets/images/criminal-home2.jpg";
@@ -9,8 +9,15 @@ const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const { setUser } = useContext(AuthContext);
+  const { user, setUser } = useContext(AuthContext);
   const navigate = useNavigate();
+
+  if (user) {
+    // If already logged in, redirect to dashboard or admin
+    return (
+      <Navigate to={user.role === "admin" ? "/admin" : "/dashboard"} replace />
+    );
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();

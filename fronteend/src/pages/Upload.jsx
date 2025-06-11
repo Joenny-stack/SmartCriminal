@@ -2,7 +2,10 @@ import React, { useState, useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
 import axios from "axios";
 import ResultCard from "../components/ResultCard.jsx";
+import bgImage from "../assets/images/criminal-home2.jpg";
+import "../styles/Home.css";
 import "../styles/Dashboard.css";
+import Swal from "sweetalert2";
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -60,7 +63,7 @@ const Upload = () => {
     }
     try {
       await axios.post(
-        `${BASE_URL}/admin/reviews`,
+        `${BASE_URL}/api/admin/reviews/flag`,
         {
           flagged_by: user.user_id,
           reason: "No match found, flagged for admin review.",
@@ -77,7 +80,25 @@ const Upload = () => {
           },
         }
       );
-      setError("Successfully submitted for admin review.");
+      Swal.fire({
+        icon: "success",
+        title: "Submitted!",
+        text: "Successfully submitted for admin review.",
+        confirmButtonColor: "#0a6efd", // Bootstrap warning (yellow/gold)
+        background: "linear-gradient(135deg, #162447 0%, #1f4068 100%)",
+        color: "#eaf6fb",
+        customClass: {
+          popup: "rounded-4 shadow-lg border-0",
+          title: "fw-bold text-warning",
+          confirmButton: "btn btn-warning",
+        },
+        showClass: {
+          popup: "swal2-show animate__animated animate__fadeInDown",
+        },
+        hideClass: {
+          popup: "swal2-hide animate__animated animate__fadeOutUp",
+        },
+      });
     } catch (err) {
       setError(
         err.response?.data?.error || "Failed to submit for admin review."
@@ -147,115 +168,142 @@ const Upload = () => {
 
   return (
     <div
-      className="dashboard-bg min-vh-100 w-100 d-flex flex-column"
       style={{
         minHeight: "100vh",
+        minWidth: "100vw",
         width: "100vw",
-        overflowY: "auto",
+        height: "100dvh",
         position: "relative",
+        overflow: "auto",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        alignItems: "center",
       }}
     >
-      <div className="container pt-5 flex-grow-1 d-flex flex-column">
+      <div
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          width: "100%",
+          height: "100%",
+          background: `url(${bgImage}) center center/cover no-repeat`,
+          zIndex: 0,
+          filter: "brightness(0.55) blur(0px)",
+        }}
+      />
+      {/* Overlay for contrast */}
+      <div
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          width: "100%",
+          height: "100%",
+          background: "rgba(10, 30, 60, 0.55)",
+          zIndex: 1,
+        }}
+      />
+      <div
+        style={{
+          position: "relative",
+          zIndex: 2,
+          width: "100vw",
+          minHeight: "100vh",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
+          padding: "0 2vw",
+        }}
+      >
         <div
-          className="d-flex flex-column align-items-center mb-4"
-          style={{ paddingTop: 52 }}
+          style={{
+            background: "rgba(255,255,255,0.08)",
+            borderRadius: 16,
+            boxShadow: "0 4px 24px 0 rgba(0,0,0,0.18)",
+            padding: "2.5rem 2.5rem 2rem 2.5rem",
+            minWidth: 320,
+            maxWidth: 420,
+            width: "100%",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            border: "1px solid rgba(255,255,255,0.13)",
+            backdropFilter: "blur(2px)",
+          }}
         >
-          <div
-            className="rounded-circle d-flex align-items-center justify-content-center mb-3 shadow"
+          <span style={{ fontSize: 38, marginBottom: 12 }}>⬆️</span>
+          <h2
             style={{
-              width: 70,
-              height: 70,
-              background: "#1976d2",
+              color: "#fff",
+              fontWeight: 700,
+              fontSize: 26,
+              marginBottom: 18,
             }}
           >
-            <i className="bi bi-upload text-white fs-2"></i>
-          </div>
-          <h1
-            className="fw-bold mb-1"
-            style={{
-              letterSpacing: 1,
-              fontSize: "3rem",
-              color: "#0a6efd",
-              display: "flex",
-              alignItems: "center",
-              gap: 12,
-              padding: "12px 0 8px 0",
-            }}
+            Upload Records
+          </h2>
+          <form
+            onSubmit={handleSubmit}
+            className="w-100 d-flex flex-column align-items-center"
           >
-            <span style={{ fontSize: "2.5rem", marginRight: 8 }}>
-              <i className="bi bi-upload" style={{ color: "#0a6efd" }}></i>
-            </span>
-            Upload Suspect Image
-          </h1>
-          <div
-            className="mb-1"
-            style={{
-              fontSize: "1.5rem",
-              color: "#444",
-              fontWeight: 500,
-            }}
-          >
-            Welcome,{" "}
-            <span style={{ fontWeight: 700, color: "#0a6efd" }}>Officer</span>.
-          </div>
-          <div
-            style={{
-              fontSize: "1.1rem",
-              color: "#555",
-              marginTop: 2,
-              marginBottom: 2,
-              textAlign: "center",
-            }}
-            className="lead text-secondary mb-4"
-          >
-            Upload a suspect's image to check for a match in the criminal
-            database.
-          </div>
-        </div>
-        <form
-          onSubmit={handleSubmit}
-          className="card p-4 shadow-lg border-0 dashboard-card-gradient mb-4"
-        >
-          <div className="d-flex flex-column align-items-center mb-3">
-            <span className="dashboard-icon-circle bg-primary bg-gradient text-white mb-2">
-              <i className="bi bi-image fs-2" />
-            </span>
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleImageChange}
-              className="form-control form-control-lg mt-2"
-              style={{ maxWidth: 350 }}
-            />
-            {preview && (
-              <img
-                src={preview}
-                alt="Preview"
-                className="img-thumbnail mt-3"
-                style={{
-                  maxWidth: 200,
-                  borderRadius: 12,
-                  boxShadow: "0 2px 8px rgba(60,72,88,0.10)",
-                }}
+            <div className="d-flex flex-column align-items-center mb-3">
+              <span className="dashboard-icon-circle bg-primary bg-gradient text-white mb-2">
+                <i className="bi bi-image fs-2" />
+              </span>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleImageChange}
+                className="form-control form-control-lg mt-2"
+                style={{ maxWidth: 350 }}
               />
+              {preview && (
+                <img
+                  src={preview}
+                  alt="Preview"
+                  className="img-thumbnail mt-3"
+                  style={{
+                    maxWidth: 200,
+                    borderRadius: 12,
+                    boxShadow: "0 2px 8px rgba(60,72,88,0.10)",
+                  }}
+                />
+              )}
+            </div>
+            <button
+              type="submit"
+              disabled={loading}
+              className="btn btn-primary btn-lg w-100 mt-2"
+            >
+              {loading ? (
+                "Uploading..."
+              ) : (
+                <>
+                  <i className="bi bi-upload me-1" /> Upload & Match
+                </>
+              )}
+            </button>
+            {error && (
+              <div
+                className={
+                  error === "Successfully submitted for admin review."
+                    ? "text-success mt-2 text-center"
+                    : "text-danger mt-2 text-center"
+                }
+              >
+                {error}
+              </div>
             )}
-          </div>
-          <button
-            type="submit"
-            disabled={loading}
-            className="btn btn-primary btn-lg w-100 mt-2"
-          >
-            {loading ? (
-              "Uploading..."
-            ) : (
-              <>
-                <i className="bi bi-upload me-1" /> Upload & Match
-              </>
-            )}
-          </button>
-          {error && <div className="text-danger mt-2 text-center">{error}</div>}
-        </form>
-        {renderResult()}
+          </form>
+          {renderResult()}
+        </div>
       </div>
     </div>
   );
