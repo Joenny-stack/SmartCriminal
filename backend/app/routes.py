@@ -246,6 +246,13 @@ def api_admin_criminals():
         )
         db.session.add(new_criminal)
         db.session.commit()
+        # Update review queue status to 'matched' for this photo_path if any pending review exists
+        review = ReviewQueue.query.join(UploadResult, ReviewQueue.upload_id == UploadResult.upload_id) \
+            .filter(UploadResult.image_path == photo_path, ReviewQueue.review_status == 'pending').first()
+        if review:
+            review.review_status = 'matched'
+            review.review_time = datetime.datetime.utcnow()
+            db.session.commit()
         return jsonify({'success': True, 'criminal_id': new_criminal.criminal_id})
 
 @main.route('/uploads', methods=['GET', 'OPTIONS'])
@@ -311,4 +318,29 @@ def serve_upload(filename):
         return jsonify({"error": "File not found"}), 404
     
     return send_from_directory(uploads_folder, filename)
+
+@main.route('/admin/upload/<int:upload_id>/set_match', methods=['POST', 'OPTIONS'])
+@cross_origin(origins="*", allow_headers=["Content-Type", "Authorization"], supports_credentials=True)
+def set_upload_match(upload_id):
+    if request.method == 'OPTIONS':
+        return '', 200
+    data = request.get_json()
+    criminal_id = data.get('criminal_id')
+    if not criminal_id:
+        return jsonify({'error': 'criminal_id is required'}), 400
+    upload = UploadResult.query.get(upload_id)
+    if not upload:
+        return jsonify({'error': 'Upload not found'}), 404
+    criminal = Criminal.query.get(criminal_id)
+    if not criminal:
+        return jsonify({'error': 'Criminal not found'}), 404
+    upload.status = 'matched'
+    upload.matched_criminal_id = criminal_id
+    # Also approve the review queue record if it exists for this upload
+    review = ReviewQueue.query.filter_by(upload_id=upload_id, review_status='pending').first()
+    if review:
+        review.review_status = 'approved'
+        review.review_time = datetime.datetime.utcnow()
+    db.session.commit()
+    return jsonify({'success': True, 'upload_id': upload_id, 'matched_criminal_id': criminal_id})
 

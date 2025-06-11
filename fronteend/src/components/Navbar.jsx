@@ -18,9 +18,6 @@ const Navbar = () => {
       style={{
         minWidth: "100vw",
         zIndex: 100,
-        position: "fixed",
-        top: 0,
-        left: 0,
         background: "rgba(10, 30, 60, 0.65)",
         backdropFilter: "blur(8px)",
         boxShadow: "0 4px 24px 0 rgba(0,0,0,0.18)",

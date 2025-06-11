@@ -1,9 +1,10 @@
 import React, { useEffect, useState, useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
 import axios from "axios";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { BounceLoader } from "react-spinners";
 import bgImage from "/src/assets/images/criminal-home2.jpg";
+import Swal from "sweetalert2";
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -33,6 +34,7 @@ const Admin = () => {
     arrest_date: "",
     photo_path: "",
   });
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (tab === "dashboard") {
@@ -174,27 +176,40 @@ const Admin = () => {
           headers: { Authorization: `Bearer ${user.token}` },
         }
       );
-      console.log("Add criminal response:", response.data);
       if (response.status === 200 || response.status === 201) {
-        console.log("Criminal saved successfully.");
+        Swal.fire({
+          icon: "success",
+          title: "Criminal added and review matched!",
+          showConfirmButton: true,
+          timer: 1500,
+        }).then(() => {
+          setShowAddCriminalModal(false);
+          setAddCriminalData({
+            full_name: "",
+            crime_type: "",
+            location: "",
+            arrest_date: "",
+            photo_path: "",
+          });
+          fetchReviews();
+        });
+        setTimeout(() => {
+          setShowAddCriminalModal(false);
+          setAddCriminalData({
+            full_name: "",
+            crime_type: "",
+            location: "",
+            arrest_date: "",
+            photo_path: "",
+          });
+          fetchReviews();
+        }, 1600);
       } else {
-        console.log(
-          "Criminal save request completed, but not successful:",
-          response.status
-        );
+        setShowAddCriminalModal(false);
+        fetchReviews();
       }
-      setShowAddCriminalModal(false);
-      setAddCriminalData({
-        full_name: "",
-        crime_type: "",
-        location: "",
-        arrest_date: "",
-        photo_path: "",
-      });
-      fetchReviews();
     } catch (err) {
       setError("Failed to add new criminal.");
-      console.log("Error saving criminal:", err);
     }
   };
 
@@ -544,12 +559,7 @@ const Admin = () => {
                                   <td>
                                     <button
                                       className="btn btn-success btn-sm me-2"
-                                      onClick={() =>
-                                        handleReviewAction(
-                                          r.review_id,
-                                          "approve"
-                                        )
-                                      }
+                                      onClick={() => navigate(`/review-approve/${r.upload_id}`)}
                                     >
                                       Approve
                                     </button>

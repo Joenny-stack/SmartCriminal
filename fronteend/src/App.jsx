@@ -14,12 +14,13 @@ import Home from "./pages/Home.jsx";
 import Login from "./pages/Login.jsx";
 import Dashboard from "./pages/Dashboard.jsx";
 import Admin from "./pages/Admin.jsx";
-import AdminReview from "./pages/AdminReview.jsx";
+// import AdminReview from "./pages/AdminReview.jsx";
 import Upload from "./pages/Upload.jsx";
 import History from "./pages/History.jsx";
 import ReportSighting from "./pages/ReportSighting.jsx";
 import BrowseCriminals from "./pages/BrowseCriminals.jsx";
 import AuthProvider from "./context/AuthContext.jsx";
+import ReviewApprove from "./pages/ReviewApprove.jsx";
 
 function Privacy() {
   return (
@@ -79,14 +80,14 @@ function AppRoutes() {
           </AdminRoute>
         }
       />
-      <Route
+      {/* <Route
         path="/admin/review"
         element={
           <AdminRoute>
             <AdminReview />
           </AdminRoute>
         }
-      />
+      /> */}
       <Route
         path="/report-sighting"
         element={
@@ -98,6 +99,14 @@ function AppRoutes() {
       <Route path="/browse-criminals" element={<BrowseCriminals />} />
       <Route path="/privacy" element={<Privacy />} />
       <Route path="/terms" element={<Terms />} />
+      <Route
+        path="/review-approve/:uploadId"
+        element={
+          <AdminRoute>
+            <ReviewApprove />
+          </AdminRoute>
+        }
+      />
       <Route
         path="*"
         element={
