@@ -22,7 +22,7 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 def home():
     return jsonify({'message': 'Smart Criminal ID API is running.'})
 
-@main.route('/api/login', methods=['POST', 'OPTIONS'])
+@main.route('/login', methods=['POST', 'OPTIONS'])
 def login():
     if request.method == 'OPTIONS':
         return '', 200
@@ -43,7 +43,7 @@ def login():
         return jsonify({'token': token, 'user_id': user.user_id, 'username': user.username, 'role': user.role}), 200
     return jsonify({'error': 'Invalid username or password.'}), 401
 
-@main.route("/api/match", methods=["POST", "OPTIONS"])
+@main.route("/match", methods=["POST", "OPTIONS"])
 def match():
     if request.method == "OPTIONS":
         return '', 200
@@ -100,57 +100,86 @@ def match():
         return jsonify({"error": str(e)}), 500
 
 @main.route('/admin/reviews', methods=['GET', 'OPTIONS'])
-@cross_origin(origins="http://localhost:5173")
-def get_admin_reviews():
+def get_api_admin_reviews():
     if request.method == 'OPTIONS':
         return '', 200
-    # Get all pending reviews, join with uploads, users, and criminals
-    reviews = (
-        ReviewQueue.query
-        .filter_by(review_status='pending')
-        .options(
-            joinedload(ReviewQueue.upload).joinedload(UploadResult.matched_criminal),
-            joinedload(ReviewQueue.flagger)
+    if request.method == 'GET':
+        reviews = (
+            ReviewQueue.query
+            .filter_by(review_status='pending')
+            .options(
+                joinedload(ReviewQueue.upload).joinedload(UploadResult.matched_criminal),
+                joinedload(ReviewQueue.flagger)
+            )
+            .all()
         )
-        .all()
-    )
-    result = []
-    for r in reviews:
-        upload = r.upload
-        criminal = upload.matched_criminal if upload else None
-        # Always return a float for match_confidence
-        match_conf = 0.0
-        if upload and upload.match_confidence is not None:
-            try:
-                match_conf = float(upload.match_confidence)
-            except Exception:
-                match_conf = 0.0
-        result.append({
-            'review_id': r.review_id,
-            'upload_id': r.upload_id,
-            'flagged_by': r.flagged_by,
-            'flagger_username': r.flagger.username if r.flagger else None,
-            'reason': r.reason,
-            'review_status': r.review_status,
-            'image_path': upload.image_path if upload else None,
-            'match_confidence': match_conf,
-            'matched_criminal': {
-                'criminal_id': criminal.criminal_id if criminal else None,
-                'full_name': criminal.full_name if criminal else None,
-                'crime_type': criminal.crime_type if criminal else None,
-                'location': criminal.location if criminal else None,
-                'arrest_date': criminal.arrest_date.isoformat() if criminal and criminal.arrest_date else None,
-                'photo_path': criminal.photo_path if criminal else None,
-            } if criminal else None
-        })
-    return jsonify(result)
+        result = []
+        for r in reviews:
+            upload = r.upload
+            criminal = upload.matched_criminal if upload else None
+            match_conf = 0.0
+            if upload and upload.match_confidence is not None:
+                try:
+                    match_conf = float(upload.match_confidence)
+                except Exception:
+                    match_conf = 0.0
+            result.append({
+                'review_id': r.review_id,
+                'upload_id': r.upload_id,
+                'flagged_by': r.flagged_by,
+                'flagger_username': r.flagger.username if r.flagger else None,
+                'reason': r.reason,
+                'review_status': r.review_status,
+                'image_path': upload.image_path if upload else None,
+                'match_confidence': match_conf,
+                'matched_criminal': {
+                    'criminal_id': criminal.criminal_id if criminal else None,
+                    'full_name': criminal.full_name if criminal else None,
+                    'crime_type': criminal.crime_type if criminal else None,
+                    'location': criminal.location if criminal else None,
+                    'arrest_date': criminal.arrest_date.isoformat() if criminal and criminal.arrest_date else None,
+                    'photo_path': criminal.photo_path if criminal else None,
+                } if criminal else None
+            })
+        return jsonify(result)
 
-@main.route('/admin/review/<int:id>', methods=['POST'])
-def review_action(id):
+@main.route('/admin/reviews/flag', methods=['POST', 'OPTIONS'])
+def post_api_admin_review_flag():
+    if request.method == "OPTIONS":
+        return '', 200
+    data = request.get_json()
+    flagged_by = data.get('flagged_by')
+    reason = data.get('reason')
+    confidence = data.get('confidence')
+    status = data.get('status')
+    review = ReviewQueue(
+        flagged_by=flagged_by,
+        reason=reason,
+        review_status='pending',
+        review_time=None,
+        upload_id=data.get('upload_id')
+    )
+    db.session.add(review)
+    db.session.commit()
+    upload_id = data.get('upload_id')
+    if upload_id:
+        upload = UploadResult.query.get(upload_id)
+        if upload:
+            if confidence is not None:
+                upload.match_confidence = confidence
+            if status is not None:
+                upload.status = status
+            db.session.commit()
+    return jsonify({'success': True, 'review_id': review.review_id})
+
+@main.route('/admin/review/<int:review_id>/action', methods=['POST', 'OPTIONS'])
+def admin_review_action(review_id):
+    if request.method == 'OPTIONS':
+        return '', 200
     data = request.get_json()
     action = data.get('action')  # 'approve' or 'reject'
     reviewer_id = data.get('reviewed_by')
-    review = ReviewQueue.query.get(id)
+    review = ReviewQueue.query.get(review_id)
     if not review or review.review_status != 'pending':
         return jsonify({'error': 'Review not found or already processed'}), 404
     if action not in ['approve', 'reject']:
@@ -158,14 +187,91 @@ def review_action(id):
     review.review_status = 'approved' if action == 'approve' else 'rejected'
     review.reviewed_by = reviewer_id
     review.review_time = datetime.datetime.utcnow()
-    # Optionally update UploadResult status
+    # Update UploadResult status
     if review.upload:
         review.upload.status = 'approved' if action == 'approve' else 'rejected'
     db.session.commit()
-    return jsonify({'success': True})
+    # Remove from review queue after action
+    db.session.delete(review)
+    db.session.commit()
+    return jsonify({'success': True, 'status': review.review_status})
 
-@main.route('/admin/users', methods=['GET'])
-def get_admin_users():
+@main.route('/admin/criminals', methods=['GET', 'POST', 'OPTIONS'])
+@cross_origin(origins="*", allow_headers=["Content-Type", "Authorization"], supports_credentials=True)
+def api_admin_criminals():
+    if request.method == 'OPTIONS':
+        return '', 200
+    if request.method == 'GET':
+        criminals = Criminal.query.all()
+        result = []
+        for c in criminals:
+            result.append({
+                'criminal_id': c.criminal_id,
+                'full_name': c.full_name,
+                'crime_type': c.crime_type,
+                'location': c.location,
+                'arrest_date': c.arrest_date.isoformat() if c.arrest_date else None,
+                'photo_path': c.photo_path,
+                'face_embedding': c.face_embedding if hasattr(c, 'face_embedding') else None
+            })
+        return jsonify(result)
+    if request.method == 'POST':
+        data = request.get_json()
+        full_name = data.get('full_name')
+        crime_type = data.get('crime_type')
+        location = data.get('location')
+        arrest_date = data.get('arrest_date')
+        photo_path = data.get('photo_path')  # relative path to uploaded image
+        if not all([full_name, crime_type, location, arrest_date, photo_path]):
+            return jsonify({'error': 'All fields are required'}), 400
+        # Generate embedding from the image
+        image_abs_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', photo_path))
+        if not os.path.exists(image_abs_path):
+            return jsonify({'error': 'Image not found'}), 404
+        embedding = None
+        try:
+            preprocessed = preprocess_image(image_abs_path)
+            embedding = model.predict(preprocessed)[0].tolist()  # convert numpy array to list
+            embedding_str = ','.join(f'{x:.8f}' for x in embedding)  # format floats for safe parsing
+        except Exception as e:
+            return jsonify({'error': f'Failed to generate embedding: {str(e)}'}), 500
+        # Save new criminal
+        new_criminal = Criminal(
+            full_name=full_name,
+            crime_type=crime_type,
+            location=location,
+            arrest_date=datetime.datetime.fromisoformat(arrest_date),
+            photo_path=photo_path,
+            face_embedding=embedding_str
+        )
+        db.session.add(new_criminal)
+        db.session.commit()
+        return jsonify({'success': True, 'criminal_id': new_criminal.criminal_id})
+
+@main.route('/uploads', methods=['GET', 'OPTIONS'])
+@cross_origin(origins="*", allow_headers=["Content-Type", "Authorization"], supports_credentials=True)
+def get_pending_uploads():
+    if request.method == 'OPTIONS':
+        return '', 200
+    uploads = UploadResult.query.all()
+    result = []
+    for u in uploads:
+        result.append({
+            'upload_id': u.upload_id,
+            'image_path': u.image_path,
+            'uploaded_by': u.uploaded_by,
+            'match_confidence': u.match_confidence,
+            'status': u.status,
+            'timestamp': u.upload_time.isoformat() if u.upload_time else None,
+            'matched_criminal': u.matched_criminal_id
+        })
+    return jsonify(result)
+
+@main.route('/admin/users', methods=['GET', 'OPTIONS'])
+@cross_origin(origins="*", allow_headers=["Content-Type", "Authorization"], supports_credentials=True)
+def get_api_admin_users():
+    if request.method == 'OPTIONS':
+        return '', 200
     users = User.query.all()
     result = []
     for u in users:
@@ -178,49 +284,31 @@ def get_admin_users():
         })
     return jsonify(result)
 
-@main.route('/admin/users/<int:id>/status', methods=['POST'])
-def toggle_user_status(id):
-    user = User.query.get(id)
-    if not user:
-        return jsonify({'error': 'User not found'}), 404
-    user.status = 'suspended' if user.status == 'active' else 'active'
-    db.session.commit()
-    return jsonify({'user_id': user.user_id, 'status': user.status})
-
-@main.route('/admin/reviews', methods=['POST', 'OPTIONS'])
-@cross_origin(origins="http://localhost:5173")
-def admin_review():
+@main.route('/criminals', methods=['GET', 'OPTIONS'])
+@cross_origin(origins="*", allow_headers=["Content-Type", "Authorization"], supports_credentials=True)
+def get_criminals_for_display():
     if request.method == 'OPTIONS':
         return '', 200
-    data = request.get_json()
-    flagged_by = data.get('flagged_by')
-    reason = data.get('reason')
-    confidence = data.get('confidence')
-    status = data.get('status')
-    # For now, we do not handle the image upload here, just the review queue
-    # Create a new ReviewQueue entry (status: pending)
-    review = ReviewQueue(
-        flagged_by=flagged_by,
-        reason=reason,
-        review_status='pending',
-        review_time=None,
-        # Save upload_id if provided
-        upload_id=data.get('upload_id')
-    )
-    db.session.add(review)
-    db.session.commit()
-    # Optionally, save confidence and status in UploadResult if upload_id is provided
-    upload_id = data.get('upload_id')
-    if upload_id:
-        upload = UploadResult.query.get(upload_id)
-        if upload:
-            if confidence is not None:
-                upload.match_confidence = confidence
-            if status is not None:
-                upload.status = status
-            db.session.commit()
-    return jsonify({'success': True, 'review_id': review.review_id})
+    criminals = Criminal.query.all()
+    result = []
+    for c in criminals:
+        result.append({
+            'criminal_id': c.criminal_id,
+            'full_name': c.full_name,
+            'crime_type': c.crime_type,
+            'location': c.location,
+            'arrest_date': c.arrest_date.isoformat() if c.arrest_date else None,
+            'photo_path': c.photo_path
+        })
+    return jsonify(result)
 
-@main.route('/uploads/<path:filename>')
-def uploaded_file(filename):
-    return send_from_directory(UPLOAD_FOLDER, filename)
+@main.route('/uploads/<path:filename>', methods=['GET'])
+def serve_upload(filename):
+    uploads_folder = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'uploads'))
+    
+    full_path = os.path.join(uploads_folder, filename)
+    if not os.path.exists(full_path):
+        return jsonify({"error": "File not found"}), 404
+    
+    return send_from_directory(uploads_folder, filename)
+

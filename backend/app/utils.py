@@ -25,8 +25,10 @@ def get_criminal_embeddings():
     conn.close()
     processed = []
     for criminal_id, full_name, crime_type, crime_grade, face_embedding in results:
-        # Convert comma-separated string to 1-D numpy array
-        emb = np.array([float(x) for x in face_embedding.split(',')], dtype=np.float32)
+        # Remove curly braces if present (legacy data)
+        if face_embedding.startswith('{') and face_embedding.endswith('}'):
+            face_embedding = face_embedding[1:-1]
+        emb = np.array([float(x) for x in face_embedding.split(',') if x.strip() != ''], dtype=np.float32)
         processed.append((criminal_id, full_name, crime_type, crime_grade, emb))
     return processed
 
