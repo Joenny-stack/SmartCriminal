@@ -4,6 +4,8 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 import { BounceLoader } from "react-spinners";
 
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 const Admin = () => {
   const { user } = useContext(AuthContext);
   const [tab, setTab] = useState("dashboard");
@@ -19,7 +21,6 @@ const Admin = () => {
   const [showUserModal, setShowUserModal] = useState(false);
   const [editMode, setEditMode] = useState(false);
   const [editUserId, setEditUserId] = useState(null);
-  const [loading, setLoading] = useState(false);
   const [loadingDashboard, setLoadingDashboard] = useState(false);
   const [loadingReviews, setLoadingReviews] = useState(false);
   const [loadingUsers, setLoadingUsers] = useState(false);
@@ -46,15 +47,12 @@ const Admin = () => {
   const fetchReviews = async () => {
     setLoadingReviews(true);
     try {
-      const res = await axios.get(
-        "http://10.40.17.125:5000/api/admin/reviews",
-        {
-          headers: { Authorization: `Bearer ${user.token}` },
-        }
-      );
+      const res = await axios.get(`${BASE_URL}/api/admin/reviews`, {
+        headers: { Authorization: `Bearer ${user.token}` },
+      });
       console.log("Fetched reviews:", res.data); // Debugging line
       setReviews(res.data);
-    } catch (err) {
+    } catch {
       setError("Failed to fetch review queue.");
     } finally {
       setLoadingReviews(false);
@@ -64,11 +62,11 @@ const Admin = () => {
   const fetchUsers = async () => {
     setLoadingUsers(true);
     try {
-      const res = await axios.get("http://10.40.17.125:5000/api/admin/users", {
+      const res = await axios.get(`${BASE_URL}/api/admin/users`, {
         headers: { Authorization: `Bearer ${user.token}` },
       });
       setUsers(res.data);
-    } catch (err) {
+    } catch {
       setError("Failed to fetch users.");
     } finally {
       setLoadingUsers(false);
@@ -78,12 +76,12 @@ const Admin = () => {
   const handleReviewAction = async (id, action) => {
     try {
       await axios.post(
-        `http://10.40.17.125:5000/api/admin/review/${id}`,
+        `${BASE_URL}/api/admin/review/${id}`,
         { action },
         { headers: { Authorization: `Bearer ${user.token}` } }
       );
       fetchReviews();
-    } catch (err) {
+    } catch {
       setError("Failed to update review.");
     }
   };
@@ -91,12 +89,12 @@ const Admin = () => {
   const handleUserStatus = async (id, status) => {
     try {
       await axios.post(
-        `http://10.40.17.125:5000/api/admin/users/${id}/status`,
+        `${BASE_URL}/api/admin/users/${id}/status`,
         { status },
         { headers: { Authorization: `Bearer ${user.token}` } }
       );
       fetchUsers();
-    } catch (err) {
+    } catch {
       setError("Failed to update user status.");
     }
   };
@@ -121,14 +119,12 @@ const Admin = () => {
     setAddMsg("");
     try {
       if (editMode) {
-        await axios.put(
-          `http://10.40.17.125:5000/api/admin/users/${editUserId}`,
-          newUser,
-          { headers: { Authorization: `Bearer ${user.token}` } }
-        );
+        await axios.put(`${BASE_URL}/api/admin/users/${editUserId}`, newUser, {
+          headers: { Authorization: `Bearer ${user.token}` },
+        });
         setAddMsg("User updated successfully.");
       } else {
-        await axios.post("http://10.40.17.125:5000/api/admin/users", newUser, {
+        await axios.post(`${BASE_URL}/api/admin/users`, newUser, {
           headers: { Authorization: `Bearer ${user.token}` },
         });
         setAddMsg("User added successfully.");
@@ -136,7 +132,7 @@ const Admin = () => {
       setShowUserModal(false);
       setNewUser({ username: "", password: "", role: "officer" });
       fetchUsers();
-    } catch (err) {
+    } catch {
       setAddMsg(editMode ? "Failed to update user." : "Failed to add user.");
     }
   };
@@ -144,11 +140,11 @@ const Admin = () => {
   const handleDeleteUser = async (id) => {
     if (!window.confirm("Are you sure you want to delete this user?")) return;
     try {
-      await axios.delete(`http://10.40.17.125:5000/api/admin/users/${id}`, {
+      await axios.delete(`${BASE_URL}/api/admin/users/${id}`, {
         headers: { Authorization: `Bearer ${user.token}` },
       });
       fetchUsers();
-    } catch (err) {
+    } catch {
       setError("Failed to delete user.");
     }
   };
@@ -171,13 +167,21 @@ const Admin = () => {
     e.preventDefault();
     try {
       const response = await axios.post(
-        "http://10.40.17.125:5000/api/admin/criminals",
+        `${BASE_URL}/api/admin/criminals`,
         addCriminalData,
         {
           headers: { Authorization: `Bearer ${user.token}` },
         }
       );
       console.log("Add criminal response:", response.data);
+      if (response.status === 200 || response.status === 201) {
+        console.log("Criminal saved successfully.");
+      } else {
+        console.log(
+          "Criminal save request completed, but not successful:",
+          response.status
+        );
+      }
       setShowAddCriminalModal(false);
       setAddCriminalData({
         full_name: "",
@@ -189,6 +193,7 @@ const Admin = () => {
       fetchReviews();
     } catch (err) {
       setError("Failed to add new criminal.");
+      console.log("Error saving criminal:", err);
     }
   };
 
@@ -641,113 +646,151 @@ const Admin = () => {
                     </div>
                   </div>
                 )}
-                {/* Add Criminal Modal */}
-                {showAddCriminalModal && (
-                  <div
-                    className="position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center"
-                    style={{ zIndex: 2000, background: "rgba(0,0,0,0.5)" }}
-                  >
-                    <div
-                      className="card p-4 shadow-lg"
-                      style={{ minWidth: 350, maxWidth: 400 }}
-                    >
-                      <form onSubmit={handleAddCriminalSubmit}>
-                        <h5 className="mb-3">Add New Criminal</h5>
-                        <div className="mb-2">
-                          <label className="form-label">Full Name</label>
-                          <input
-                            type="text"
-                            className="form-control"
-                            value={addCriminalData.full_name}
-                            onChange={(e) =>
-                              setAddCriminalData({
-                                ...addCriminalData,
-                                full_name: e.target.value,
-                              })
-                            }
-                            required
-                          />
-                        </div>
-                        <div className="mb-2">
-                          <label className="form-label">Crime Type</label>
-                          <input
-                            type="text"
-                            className="form-control"
-                            value={addCriminalData.crime_type}
-                            onChange={(e) =>
-                              setAddCriminalData({
-                                ...addCriminalData,
-                                crime_type: e.target.value,
-                              })
-                            }
-                            required
-                          />
-                        </div>
-                        <div className="mb-2">
-                          <label className="form-label">Location</label>
-                          <input
-                            type="text"
-                            className="form-control"
-                            value={addCriminalData.location}
-                            onChange={(e) =>
-                              setAddCriminalData({
-                                ...addCriminalData,
-                                location: e.target.value,
-                              })
-                            }
-                            required
-                          />
-                        </div>
-                        <div className="mb-2">
-                          <label className="form-label">Arrest Date</label>
-                          <input
-                            type="date"
-                            className="form-control"
-                            value={addCriminalData.arrest_date}
-                            onChange={(e) =>
-                              setAddCriminalData({
-                                ...addCriminalData,
-                                arrest_date: e.target.value,
-                              })
-                            }
-                            required
-                          />
-                        </div>
-                        <div className="mb-2">
-                          <label className="form-label">Photo Path</label>
-                          <input
-                            type="text"
-                            className="form-control"
-                            value={addCriminalData.photo_path}
-                            onChange={(e) =>
-                              setAddCriminalData({
-                                ...addCriminalData,
-                                photo_path: e.target.value,
-                              })
-                            }
-                            required
-                          />
-                        </div>
-                        <div className="d-flex justify-content-end gap-2 mt-3">
-                          <button
-                            type="button"
-                            className="btn btn-outline-secondary"
-                            onClick={() => setShowAddCriminalModal(false)}
-                          >
-                            Cancel
-                          </button>
-                          <button type="submit" className="btn btn-primary">
-                            Save
-                          </button>
-                        </div>
-                      </form>
-                    </div>
-                  </div>
-                )}
               </div>
             ))}
         </div>
       </div>
+      {/* Add Criminal Modal - always rendered at the root of Admin page */}
+      {showAddCriminalModal && (
+        <div
+          className="position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center"
+          style={{ zIndex: 2000, background: "rgba(0,0,0,0.5)" }}
+        >
+          <div
+            className="card p-4 shadow-lg"
+            style={{ minWidth: 350, maxWidth: 400 }}
+          >
+            <form onSubmit={handleAddCriminalSubmit}>
+              <h5 className="mb-3">Add New Criminal</h5>
+              <div className="mb-2">
+                <label className="form-label">Full Name</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  value={addCriminalData.full_name}
+                  onChange={(e) =>
+                    setAddCriminalData({
+                      ...addCriminalData,
+                      full_name: e.target.value,
+                    })
+                  }
+                  required
+                />
+              </div>
+              <div className="mb-2">
+                <label className="form-label">Crime Type</label>
+                <select
+                  className="form-select"
+                  value={addCriminalData.crime_type}
+                  onChange={(e) =>
+                    setAddCriminalData({
+                      ...addCriminalData,
+                      crime_type: e.target.value,
+                    })
+                  }
+                  required
+                >
+                  <option value="">Select a crime type</option>
+                  <option value="Burglary">
+                    Burglary – Unauthorized entry into a property with intent to
+                    commit a crime.
+                  </option>
+                  <option value="Fraud">
+                    Fraud – Deception used to gain financial or personal
+                    benefits.
+                  </option>
+                  <option value="Cyberbullying">
+                    Cyberbullying – Harassment or intimidation of individuals
+                    online.
+                  </option>
+                  <option value="Money Laundering">
+                    Money Laundering – Concealing illegally obtained money to
+                    make it appear legitimate.
+                  </option>
+                  <option value="Identity Theft">
+                    Identity Theft – Using someone else’s personal information
+                    for financial gain.
+                  </option>
+                  <option value="Drug Trafficking">
+                    Drug Trafficking – The distribution and sale of illegal
+                    substances.
+                  </option>
+                  <option value="Sexual Assault">
+                    Sexual Assault – Any non-consensual sexual act.
+                  </option>
+                  <option value="Vandalism">
+                    Vandalism – Deliberate destruction or damage to property.
+                  </option>
+                  <option value="Racketeering">
+                    Racketeering – Engaging in fraudulent business operations or
+                    organized crime schemes.
+                  </option>
+                  <option value="Arson">
+                    Arson – Intentionally setting fire to property.
+                  </option>
+                </select>
+              </div>
+              <div className="mb-2">
+                <label className="form-label">Location</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  value={addCriminalData.location}
+                  onChange={(e) =>
+                    setAddCriminalData({
+                      ...addCriminalData,
+                      location: e.target.value,
+                    })
+                  }
+                  required
+                />
+              </div>
+              <div className="mb-2">
+                <label className="form-label">Arrest Date</label>
+                <input
+                  type="date"
+                  className="form-control"
+                  value={addCriminalData.arrest_date}
+                  onChange={(e) =>
+                    setAddCriminalData({
+                      ...addCriminalData,
+                      arrest_date: e.target.value,
+                    })
+                  }
+                  required
+                />
+              </div>
+              <div className="mb-2">
+                <label className="form-label">Photo Path</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  value={addCriminalData.photo_path}
+                  onChange={(e) =>
+                    setAddCriminalData({
+                      ...addCriminalData,
+                      photo_path: e.target.value,
+                    })
+                  }
+                  required
+                />
+              </div>
+              <div className="d-flex justify-content-end gap-2 mt-3">
+                <button
+                  type="button"
+                  className="btn btn-outline-secondary"
+                  onClick={() => setShowAddCriminalModal(false)}
+                >
+                  Cancel
+                </button>
+                <button type="submit" className="btn btn-primary">
+                  Save
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -1,8 +1,8 @@
 .home-hero {
-  min-height: 100vh;
-  min-width: 100vw;
-  width: 100vw;
-  height: 100vh;
+  min-height: 100dvh;
+  min-width: 100dvw;
+  width: 100dvw;
+  height: 100dvh;
   background: linear-gradient(120deg, #f6f7fb 0%, #e9ecf6 100%);
   display: flex;
   flex-direction: column;

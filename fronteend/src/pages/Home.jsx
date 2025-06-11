@@ -1,102 +1,288 @@
 import { Link } from "react-router-dom";
 import "../styles/Home.css";
-import eventIllustration from "../assets/images/mostwanted.jpg";
+import bgImage from "../assets/images/criminal-home2.jpg";
 
 const Home = () => (
   <div
-    className="dashboard-bg min-vh-100 w-100 d-flex flex-column"
     style={{
       minHeight: "100vh",
+      minWidth: "100vw",
       width: "100vw",
-      overflowY: "auto",
+      height: "100vh",
       position: "relative",
+      overflow: "hidden",
+      display: "flex",
+      flexDirection: "column",
+      justifyContent: "center",
+      alignItems: "center",
     }}
   >
-    <div className="container pt-5 flex-grow-1 d-flex flex-column">
+    {/* Background Image */}
+    <div
+      style={{
+        position: "absolute",
+        top: 0,
+        left: 0,
+        width: "100vw",
+        height: "100vh",
+        background: `url(${bgImage}) center center/cover no-repeat`,
+        zIndex: 0,
+        filter: "brightness(0.55) blur(0px)",
+      }}
+    />
+    {/* Overlay for contrast */}
+    <div
+      style={{
+        position: "absolute",
+        top: 0,
+        left: 0,
+        width: "100vw",
+        height: "100vh",
+        background: "rgba(10, 30, 60, 0.55)",
+        zIndex: 1,
+      }}
+    />
+    {/* Main Content */}
+    <div
+      style={{
+        position: "relative",
+        zIndex: 2,
+        width: "100vw",
+        minHeight: "100vh",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        alignItems: "center",
+        padding: "0 2vw",
+      }}
+    >
+      {/* Hero Section */}
       <div
-        className="d-flex flex-column align-items-center mb-4"
-        style={{ paddingTop: 52 }}
+        style={{
+          display: "flex",
+          flexWrap: "wrap",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: 32,
+          width: "100%",
+          maxWidth: 1200,
+          margin: "0 auto",
+          paddingTop: 60,
+        }}
       >
         <div
-          className="rounded-circle d-flex align-items-center justify-content-center mb-3 shadow"
           style={{
-            width: 70,
-            height: 70,
-            background: "#1976d2",
+            flex: "1 1 420px",
+            minWidth: 320,
+            maxWidth: 600,
+            padding: "2vw 0",
           }}
         >
-          <i className="bi bi-house-door text-white fs-2"></i>
-        </div>
-        <h1
-          className="fw-bold mb-1"
-          style={{
-            letterSpacing: 1,
-            fontSize: "3rem",
-            color: "#0a6efd",
-            display: "flex",
-            alignItems: "center",
-            gap: 12,
-            padding: "12px 0 8px 0",
-          }}
-        >
-          <span style={{ fontSize: "2.5rem", marginRight: 8 }}>
-            <i className="bi bi-house-door" style={{ color: "#0a6efd" }}></i>
-          </span>
-          Home
-        </h1>
-        <div
-          className="mb-1"
-          style={{
-            fontSize: "1.5rem",
-            color: "#444",
-            fontWeight: 500,
-          }}
-        >
-          Welcome,{" "}
-          <span style={{ fontWeight: 700, color: "#0a6efd" }}>Officer</span>.
-        </div>
-        <div
-          style={{
-            fontSize: "1.1rem",
-            color: "#555",
-            marginTop: 2,
-            marginBottom: 2,
-            textAlign: "center",
-          }}
-          className="lead text-secondary mb-4"
-        >
-          Access the Smart Criminal ID system features below.
+          <h1
+            style={{
+              fontSize: "2.8rem",
+              fontWeight: 800,
+              lineHeight: 1.1,
+              color: "#fff",
+              marginBottom: 24,
+              textShadow: "0 2px 16px rgba(0,0,0,0.25)",
+            }}
+          >
+            Discover the power of
+            <span
+              style={{
+                background: "rgba(13,110,253,0.85)",
+                borderRadius: 8,
+                padding: "0 10px",
+                margin: "0 8px",
+                color: "#fff",
+                boxShadow: "0 2px 12px 0 rgba(10,110,253,0.18)",
+              }}
+            >
+              secure
+            </span>
+            digital criminal identification
+            <br />
+            with
+            <span
+              style={{
+                background: "rgba(13,110,253,0.85)",
+                borderRadius: 8,
+                padding: "0 10px",
+                margin: "0 8px",
+                color: "#fff",
+                boxShadow: "0 2px 12px 0 rgba(10,110,253,0.18)",
+              }}
+            >
+              Smart Criminal ID
+            </span>
+            .
+          </h1>
+          <p
+            style={{
+              fontSize: 20,
+              color: "#e3eaff",
+              marginBottom: 32,
+              lineHeight: 1.6,
+              textShadow: "0 2px 12px rgba(0,0,0,0.18)",
+            }}
+          >
+            Instantly search, verify, and manage criminal records.
+            <br />
+            Empower law enforcement, legal professionals, and the public.
+            <br />
+            Join us to help build a safer, smarter society.
+          </p>
+          <Link
+            to="/register"
+            style={{
+              display: "inline-block",
+              background: "#0a6efd",
+              color: "#fff",
+              fontWeight: 700,
+              fontSize: 20,
+              padding: "1rem 2.5rem",
+              borderRadius: 10,
+              textDecoration: "none",
+              boxShadow: "0 2px 12px 0 rgba(10,110,253,0.18)",
+              letterSpacing: 1,
+              transition: "background 0.2s",
+            }}
+          >
+            Get Started
+          </Link>
         </div>
       </div>
-      <section className="home-content">
-        <h1 className="home-title">Smart Criminal ID: Modernizing Justice</h1>
-        <p className="home-subtitle">
-          Empower law enforcement, legal professionals, and the public with
-          instant, secure access to digital criminal identification. <br />
-          Search, verify, and manage criminal records with confidence. <br />
-          Join Smart Criminal ID and help build a safer, smarter society.
-        </p>
-        <Link to="/register" className="home-cta-btn">
-          Get Started
-        </Link>
-      </section>
-      <section className="home-illustration">
-        <img
-          src={eventIllustration}
-          alt="Justice and digital criminal identification"
-        />
-      </section>
+      {/* Feature Grid */}
+      <div
+        style={{
+          display: "flex",
+          flexWrap: "wrap",
+          borderTop: "1px solid rgba(255,255,255,0.18)",
+          marginTop: 40,
+          background: "rgba(10,30,60,0.35)",
+          borderRadius: 12,
+          width: "100%",
+          maxWidth: 1200,
+          boxShadow: "0 2px 16px 0 rgba(0,0,0,0.10)",
+        }}
+      >
+        <div
+          style={{
+            flex: "2 1 320px",
+            minWidth: 220,
+            padding: "2rem 1.5rem",
+            borderRight: "1px solid rgba(255,255,255,0.12)",
+            textAlign: "center",
+          }}
+        >
+          <div
+            style={{
+              fontWeight: 700,
+              fontSize: 18,
+              marginBottom: 6,
+              color: "#fff",
+              textShadow: "0 2px 8px rgba(0,0,0,0.18)",
+            }}
+          >
+            <span style={{ marginRight: 6 }}>🔍</span> Powerful Search
+          </div>
+          <div
+            style={{
+              color: "#e3eaff",
+              fontSize: 16,
+            }}
+          >
+            Instantly search criminal records and match faces securely.
+          </div>
+        </div>
+        <div
+          style={{
+            flex: "2 1 320px",
+            minWidth: 220,
+            padding: "2rem 1.5rem",
+            borderRight: "1px solid rgba(255,255,255,0.12)",
+            textAlign: "center",
+          }}
+        >
+          <div
+            style={{
+              fontWeight: 700,
+              fontSize: 18,
+              marginBottom: 6,
+              color: "#fff",
+              textShadow: "0 2px 8px rgba(0,0,0,0.18)",
+            }}
+          >
+            <span style={{ marginRight: 6 }}>🛡️</span> Trusted & Secure
+          </div>
+          <div
+            style={{
+              color: "#e3eaff",
+              fontSize: 16,
+            }}
+          >
+            Data privacy and security for all users and agencies.
+          </div>
+        </div>
+        <div
+          style={{
+            flex: "2 1 320px",
+            minWidth: 220,
+            padding: "2rem 1.5rem",
+            textAlign: "center",
+          }}
+        >
+          <div
+            style={{
+              fontWeight: 700,
+              fontSize: 18,
+              marginBottom: 6,
+              color: "#fff",
+              textShadow: "0 2px 8px rgba(0,0,0,0.18)",
+            }}
+          >
+            <span style={{ marginRight: 6 }}>⚡</span> Fast & Reliable
+          </div>
+          <div
+            style={{
+              color: "#e3eaff",
+              fontSize: 16,
+            }}
+          >
+            Lightning-fast results and robust uptime for mission-critical work.
+          </div>
+        </div>
+      </div>
     </div>
-    <footer className="home-footer">
+    {/* Footer */}
+    <footer
+      className="home-footer"
+      style={{
+        marginTop: 32,
+        position: "relative",
+        zIndex: 3,
+        color: "#e3eaff",
+        textShadow: "0 2px 8px rgba(0,0,0,0.18)",
+      }}
+    >
       <span>
         © {new Date().getFullYear()} Smart Criminal ID. All rights reserved.
       </span>
-      <span>
-        <Link to="/privacy" className="home-footer-link">
+      <span style={{ marginLeft: 12 }}>
+        <Link
+          to="/privacy"
+          className="home-footer-link"
+          style={{ color: "#e3eaff" }}
+        >
           Privacy Policy
         </Link>
         {" | "}
-        <Link to="/terms" className="home-footer-link">
+        <Link
+          to="/terms"
+          className="home-footer-link"
+          style={{ color: "#e3eaff" }}
+        >
           Terms of Service
         </Link>
       </span>

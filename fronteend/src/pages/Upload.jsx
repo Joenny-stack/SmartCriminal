@@ -4,6 +4,8 @@ import axios from "axios";
 import ResultCard from "../components/ResultCard.jsx";
 import "../styles/Dashboard.css";
 
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 const Upload = () => {
   const { user } = useContext(AuthContext);
   const [image, setImage] = useState(null);
@@ -34,16 +36,12 @@ const Upload = () => {
     const formData = new FormData();
     formData.append("image", image);
     try {
-      const res = await axios.post(
-        "http://10.40.17.125:5000/api/match",
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-            Authorization: `Bearer ${user.token}`,
-          },
-        }
-      );
+      const res = await axios.post(`${BASE_URL}/api/match`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${user.token}`,
+        },
+      });
       setResult(res.data);
     } catch (err) {
       setError(err.response?.data?.error || "Upload failed.");
@@ -62,7 +60,7 @@ const Upload = () => {
     }
     try {
       await axios.post(
-        "http://10.40.17.125:5000/admin/reviews",
+        `${BASE_URL}/admin/reviews`,
         {
           flagged_by: user.user_id,
           reason: "No match found, flagged for admin review.",

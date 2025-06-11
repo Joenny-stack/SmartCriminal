@@ -3,6 +3,8 @@ import { AuthContext } from "../context/AuthContext";
 import axios from "axios";
 import HistoryTable from "../components/HistoryTable.jsx";
 
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 const History = () => {
   const { user } = useContext(AuthContext);
   const [uploads, setUploads] = useState([]);
@@ -12,11 +14,11 @@ const History = () => {
   useEffect(() => {
     const fetchUploads = async () => {
       try {
-        const res = await axios.get("http://10.40.17.125:5000/api/uploads", {
+        const res = await axios.get(`${BASE_URL}/api/uploads`, {
           headers: { Authorization: `Bearer ${user.token}` },
         });
         setUploads(res.data);
-      } catch (err) {
+      } catch {
         setError("Failed to fetch upload history.");
       } finally {
         setLoading(false);
