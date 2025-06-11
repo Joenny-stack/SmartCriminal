@@ -448,6 +448,7 @@ const Admin = () => {
                             <thead className="table-light">
                               <tr>
                                 <th>Image</th>
+                                <th>Officer</th>
                                 <th>Confidence</th>
                                 <th>Status</th>
                                 <th>Actions</th>
@@ -460,7 +461,7 @@ const Admin = () => {
                                     {r.image_path ? (
                                       <>
                                         <img
-                                          src={`http://10.40.17.125:5000/${r.image_path.replace(
+                                          src={`${BASE_URL}/api/${r.image_path.replace(
                                             /\\/g,
                                             "/"
                                           )}`}
@@ -475,7 +476,7 @@ const Admin = () => {
                                           className="btn btn-link btn-sm ms-2"
                                           onClick={() =>
                                             window.open(
-                                              `http://10.40.17.125:5000/${r.image_path.replace(
+                                              `${BASE_URL}/api/${r.image_path.replace(
                                                 /\\/g,
                                                 "/"
                                               )}`,
@@ -495,6 +496,7 @@ const Admin = () => {
                                       <span>No image</span>
                                     )}
                                   </td>
+                                  <td>{r.flagger_username || r.flagged_by || 'N/A'}</td>
                                   <td>
                                     {r.match_confidence !== undefined &&
                                     r.match_confidence !== null ? (
