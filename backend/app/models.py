@@ -22,6 +22,7 @@ class Criminal(db.Model):
     location = db.Column(db.String(100))
     arrest_date = db.Column(db.Date)
     is_repeat_offender = db.Column(db.Boolean, default=False)
+    face_embedding = db.Column(db.Text)  # Add this line to store the embedding as text
     matches = db.relationship('UploadResult', backref='matched_criminal', lazy=True)
 
 class UploadResult(db.Model):
