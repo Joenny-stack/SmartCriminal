@@ -4,16 +4,21 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  /* justify-content: center; */
   padding: 2rem;
   background-color: #f8fafd;
-  min-width: 100dvw;
-  min-height: 100dvh;
+  min-width: 100vw;
+  min-height: 100vh;
+  width: 100vw;
+  height: 100vh;
+  box-sizing: border-box;
 }
 
 .dashboard-bg {
   background: linear-gradient(135deg, #f8fafd 0%, #e9f0fb 100%);
   min-height: 100vh;
+  min-width: 100vw;
+  width: 100vw;
+  box-sizing: border-box;
   padding-bottom: 40px;
 }
 
@@ -63,6 +68,40 @@
   font-size: 1.05rem;
   padding: 0.6rem 1.5rem;
   box-shadow: 0 2px 6px rgba(0, 123, 255, 0.08);
+}
+
+.dashboard-card-gradient {
+  background: linear-gradient(135deg, #f8fafd 60%, #e9f0fb 100%);
+}
+
+.dashboard-icon-circle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  box-shadow: 0 2px 8px rgba(60, 72, 88, 0.10);
+  font-size: 2rem;
+}
+
+.admin-tab-btn {
+  border-radius: 0.5rem;
+  border: 2px solid #1976d2;
+  background: #fff;
+  color: #1976d2;
+  transition: background 0.15s, color 0.15s, box-shadow 0.15s;
+  font-size: 1.08rem;
+  margin-bottom: 6px;
+  min-width: 160px;
+  box-shadow: 0 1px 4px rgba(25, 118, 210, 0.06);
+}
+
+.admin-tab-btn.active,
+.admin-tab-btn:hover {
+  background: #1976d2;
+  color: #fff;
+  border-color: #1976d2;
 }
 
 @media (max-width: 767px) {
