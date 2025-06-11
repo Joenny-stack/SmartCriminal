@@ -2,6 +2,8 @@ import React, { useEffect, useState, useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
 import axios from "axios";
 import HistoryTable from "../components/HistoryTable.jsx";
+import bgImage from "../assets/images/criminal-home2.jpg";
+import "../styles/Home.css";
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -17,6 +19,7 @@ const History = () => {
         const res = await axios.get(`${BASE_URL}/api/uploads`, {
           headers: { Authorization: `Bearer ${user.token}` },
         });
+        // console.log(res.data);
         setUploads(res.data);
       } catch {
         setError("Failed to fetch upload history.");
@@ -29,73 +32,92 @@ const History = () => {
 
   return (
     <div
-      className="dashboard-bg min-vh-100 w-100 d-flex flex-column"
       style={{
         minHeight: "100vh",
+        minWidth: "100vw",
         width: "100vw",
-        overflowY: "auto",
+        height: "100dvh",
         position: "relative",
+        overflow: "auto",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        alignItems: "center",
       }}
     >
-      <div className="container pt-5 flex-grow-1 d-flex flex-column">
+      <div
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          width: "100vw",
+          height: "100vh",
+          background: `url(${bgImage}) center center/cover no-repeat`,
+          zIndex: 0,
+          filter: "brightness(0.55) blur(0px)",
+        }}
+      />
+      <div
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          width: "100vw",
+          height: "100vh",
+          background: "rgba(10, 30, 60, 0.55)",
+          zIndex: 1,
+        }}
+      />
+      <div
+        style={{
+          position: "relative",
+          zIndex: 2,
+          width: "100vw",
+          minHeight: "100vh",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
+          padding: "0 2vw",
+        }}
+      >
         <div
-          className="d-flex flex-column align-items-center mb-4"
-          style={{ paddingTop: 52 }}
+          style={{
+            background: "rgba(255,255,255,0.08)",
+            borderRadius: 16,
+            boxShadow: "0 4px 24px 0 rgba(0,0,0,0.18)",
+            padding: "2.5rem 2.5rem 2rem 2.5rem",
+            minWidth: 320,
+            maxWidth: 900,
+            width: "100%",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            border: "1px solid rgba(255,255,255,0.13)",
+            backdropFilter: "blur(2px)",
+            marginTop: 48,
+          }}
         >
-          <div
-            className="rounded-circle d-flex align-items-center justify-content-center mb-3 shadow"
-            style={{ width: 70, height: 70, background: "#1976d2" }}
-          >
-            <i className="bi bi-clock-history text-white fs-2"></i>
-          </div>
-          <h1
-            className="fw-bold mb-1"
+          <span style={{ fontSize: 38, marginBottom: 12 }}>🕓</span>
+          <h2
             style={{
-              letterSpacing: 1,
-              fontSize: "3rem",
-              color: "#0a6efd",
-              display: "flex",
-              alignItems: "center",
-              gap: 12,
-              padding: "12px 0 8px 0",
+              color: "#fff",
+              fontWeight: 700,
+              fontSize: 26,
+              marginBottom: 18,
             }}
           >
-            <span style={{ fontSize: "2.5rem", marginRight: 8 }}>
-              <i
-                className="bi bi-clock-history"
-                style={{ color: "#0a6efd" }}
-              ></i>
-            </span>
-            Upload History
-          </h1>
-          <div
-            className="mb-1"
-            style={{ fontSize: "1.5rem", color: "#444", fontWeight: 500 }}
-          >
-            Welcome,{" "}
-            <span style={{ fontWeight: 700, color: "#0a6efd" }}>Officer</span>.
+            History
+          </h2>
+          <div className="flex-grow-1">
+            {loading ? (
+              <div>Loading...</div>
+            ) : error ? (
+              <div className="text-danger">{error}</div>
+            ) : (
+              <HistoryTable uploads={uploads} loading={loading} />
+            )}
           </div>
-          <div
-            style={{
-              fontSize: "1.1rem",
-              color: "#555",
-              marginTop: 2,
-              marginBottom: 2,
-              textAlign: "center",
-            }}
-            className="lead text-secondary mb-4"
-          >
-            View your previous uploads and match results below.
-          </div>
-        </div>
-        <div className="flex-grow-1">
-          {loading ? (
-            <div>Loading...</div>
-          ) : error ? (
-            <div className="text-danger">{error}</div>
-          ) : (
-            <HistoryTable uploads={uploads} />
-          )}
         </div>
       </div>
     </div>
