@@ -303,7 +303,7 @@ const Admin = () => {
                 marginBottom: 2,
                 textAlign: "center",
               }}
-              className="lead text-secondary mb-4"
+              className="lead text-primary mb-4"
             >
               Access your tools and manage your workflow below.
             </div>
@@ -511,7 +511,11 @@ const Admin = () => {
                                       <span>No image</span>
                                     )}
                                   </td>
-                                  <td>{r.flagger_username || r.flagged_by || 'N/A'}</td>
+                                  <td>
+                                    {r.flagger_username ||
+                                      r.flagged_by ||
+                                      "N/A"}
+                                  </td>
                                   <td>
                                     {r.match_confidence !== undefined &&
                                     r.match_confidence !== null ? (
@@ -559,7 +563,11 @@ const Admin = () => {
                                   <td>
                                     <button
                                       className="btn btn-success btn-sm me-2"
-                                      onClick={() => navigate(`/review-approve/${r.upload_id}`)}
+                                      onClick={() =>
+                                        navigate(
+                                          `/review-approve/${r.upload_id}`
+                                        )
+                                      }
                                     >
                                       Approve
                                     </button>

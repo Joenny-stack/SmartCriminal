@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify, current_app, send_from_directory
-from werkzeug.security import check_password_hash
+from werkzeug.security import check_password_hash, generate_password_hash
 from .models import User, UploadResult, ReviewQueue, Criminal
 from sqlalchemy.orm import joinedload
 from sqlalchemy import or_
@@ -343,4 +343,32 @@ def set_upload_match(upload_id):
         review.review_time = datetime.datetime.utcnow()
     db.session.commit()
     return jsonify({'success': True, 'upload_id': upload_id, 'matched_criminal_id': criminal_id})
+
+@main.route('/admin/users/<int:user_id>', methods=['PUT', 'OPTIONS'])
+@cross_origin(origins="*", allow_headers=["Content-Type", "Authorization"], supports_credentials=True)
+def update_admin_user(user_id):
+    if request.method == 'OPTIONS':
+        return '', 200
+    data = request.get_json()
+    if not data:
+        return jsonify({'error': 'No data provided'}), 400
+    user = User.query.get(user_id)
+    if not user:
+        return jsonify({'error': 'User not found'}), 404
+    username = data.get('username')
+    password = data.get('password')
+    role = data.get('role')
+    # Only update username if not taken by another user
+    if username and username != user.username:
+        if User.query.filter_by(username=username).first():
+            return jsonify({'error': 'Username already exists'}), 409
+        user.username = username
+    # Only update password if provided and not blank
+    if password is not None and password.strip() != '':
+        user.password_hash = generate_password_hash(password)
+    # Update role if provided
+    if role:
+        user.role = role
+    db.session.commit()
+    return jsonify({'success': True, 'user_id': user.user_id, 'username': user.username, 'role': user.role, 'status': user.status})
 
