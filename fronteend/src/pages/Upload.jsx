@@ -175,38 +175,20 @@ const Upload = () => {
         height: "100dvh",
         position: "relative",
         overflow: "auto",
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
-        alignItems: "center",
+        background: `url(${bgImage}) center center/cover no-repeat`,
       }}
     >
-      <div
-        style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          width: "100%",
-          height: "100%",
-          background: `url(${bgImage}) center center/cover no-repeat`,
-          zIndex: 0,
-          filter: "brightness(0.55) blur(0px)",
-        }}
-      />
       {/* Overlay for contrast */}
       <div
         style={{
-          position: "absolute",
+          position: "fixed",
           top: 0,
           left: 0,
-          right: 0,
-          bottom: 0,
-          width: "100%",
-          height: "100%",
+          width: "100vw",
+          height: "100vh",
           background: "rgba(10, 30, 60, 0.55)",
           zIndex: 1,
+          pointerEvents: "none",
         }}
       />
       <div
