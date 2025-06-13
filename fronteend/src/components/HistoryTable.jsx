@@ -13,9 +13,7 @@ const HistoryTable = ({ uploads, loading }) => {
     >
       <div
         style={{
-          background: "rgba(255,255,255,0.08)",
           borderRadius: 16,
-          boxShadow: "0 4px 24px 0 rgba(0,0,0,0.18)",
           padding: "2rem 2.5rem 1.5rem 2.5rem",
           minWidth: 320,
           maxWidth: 900,
@@ -23,21 +21,8 @@ const HistoryTable = ({ uploads, loading }) => {
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          border: "1px solid rgba(255,255,255,0.13)",
-          backdropFilter: "blur(2px)",
         }}
       >
-        <span style={{ fontSize: 38, marginBottom: 12 }}>🕓</span>
-        <h2
-          style={{
-            color: "#fff",
-            fontWeight: 700,
-            fontSize: 26,
-            marginBottom: 18,
-          }}
-        >
-          History
-        </h2>
         {loading ? (
           <div
             style={{

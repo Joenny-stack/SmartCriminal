@@ -42,7 +42,7 @@ const Home = () => {
             left: 0,
             width: "100vw",
             height: "100vh",
-            background: "rgba(10, 30, 60, 0.55)",
+            background: "rgba(179, 199, 232, 0.55)",
             zIndex: 1,
           }}
         />
@@ -267,41 +267,25 @@ const Home = () => {
         minHeight: "100vh",
         minWidth: "100vw",
         width: "100vw",
-        height: "100dvh", // allow height to grow
+        height: "100dvh",
         position: "relative",
-        overflow: "auto", // enable scrolling
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
-        alignItems: "center",
+        overflow: "auto",
+        background: `url(${bgImage}) center center/cover no-repeat`,
       }}
     >
-      {/* Background Image */}
-      <div
-        style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          width: "100vw",
-          height: "100vh",
-          background: `url(${bgImage}) center center/cover no-repeat`,
-          zIndex: 0,
-          filter: "brightness(0.55) blur(0px)",
-        }}
-      />
       {/* Overlay for contrast */}
       <div
         style={{
-          position: "absolute",
+          position: "fixed",
           top: 0,
           left: 0,
           width: "100vw",
           height: "100vh",
           background: "rgba(10, 30, 60, 0.55)",
           zIndex: 1,
+          pointerEvents: "none",
         }}
       />
-      {/* Main Content */}
       <div
         style={{
           position: "relative",

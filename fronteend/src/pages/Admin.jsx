@@ -252,7 +252,7 @@ const Admin = () => {
         }}
       >
         {/* Admin Panel Title Section */}
-        <div className="container pt-5 flex-grow-1 d-flex flex-column">
+        <div className="container pt-5 flex-grow-1 d-flex flex-column align-items-center justify-content-center">
           <div
             className="d-flex flex-column align-items-center mb-4"
             style={{ paddingTop: 10 }}
@@ -260,61 +260,89 @@ const Admin = () => {
             <div
               className="rounded-circle d-flex align-items-center justify-content-center mb-3 shadow"
               style={{
-                width: 70,
-                height: 70,
-                background: "#1976d2",
+                width: 80,
+                height: 80,
+                background:
+                  "linear-gradient(135deg, #0a6efd 60%, #1f4068 100%)",
+                boxShadow: "0 4px 16px 0 rgba(10,110,253,0.18)",
               }}
             >
-              <i className="bi bi-shield-lock text-white fs-2"></i>
+              <i className="bi bi-shield-lock text-white fs-1"></i>
             </div>
             <h1
-              className="fw-bold mb-1"
+              className="fw-bold mb-1 text-center"
               style={{
                 letterSpacing: 1,
-                fontSize: "3rem",
-                color: "#0a6efd",
+                fontSize: "2.5rem",
+                color: "#fff",
                 display: "flex",
                 alignItems: "center",
                 gap: 12,
                 padding: "12px 0 8px 0",
+                textShadow: "0 2px 16px rgba(0,0,0,0.25)",
               }}
             >
-              <span style={{ fontSize: "2.5rem", marginRight: 8 }}>
-                {/* Optionally, you can use an SVG or icon here for a more modern look */}
+              <span style={{ fontSize: "2.2rem", marginRight: 8 }}>
                 <i
                   className="bi bi-person-badge"
-                  style={{ color: "#0a6efd" }}
+                  style={{ color: "#ffc107" }}
                 ></i>
               </span>
               Admin Dashboard
             </h1>
             <div
-              className="mb-1"
-              style={{ fontSize: "1.5rem", color: "#444", fontWeight: 500 }}
+              className="mb-1 text-center"
+              style={{ fontSize: "1.3rem", color: "#e3eaff", fontWeight: 500 }}
             >
               Welcome,{" "}
-              <span style={{ fontWeight: 700, color: "#0a6efd" }}>Admin</span>.
+              <span style={{ fontWeight: 700, color: "#ffc107" }}>Admin</span>.
             </div>
             <div
               style={{
-                fontSize: "1.1rem",
-                color: "#555",
+                fontSize: "1.15rem",
+                color: "#ffffff",
+                fontWeight: 700,
+                letterSpacing: 0.5,
                 marginTop: 2,
                 marginBottom: 2,
                 textAlign: "center",
+                textShadow: "0 2px 8px #0a6efd88, 0 1px 0 #2228",
+                background:
+                  "linear-gradient(90deg, #0a6efd33 0%, #1abc9c33 100%)",
+                borderRadius: 8,
+                padding: "0.5rem 1.2rem",
+                display: "inline-block",
+                boxShadow: "0 2px 8px 0 rgba(10,110,253,0.10)",
               }}
-              className="lead text-primary mb-4"
+              className="lead mb-4"
             >
               Access your tools and manage your workflow below.
             </div>
           </div>
           {/* Tab Buttons */}
-          <div className="mb-4 d-flex flex-wrap gap-3 align-items-center justify-content-start">
+          <div
+            className="mb-4 d-flex flex-wrap gap-3 align-items-center justify-content-center"
+            style={{ width: "100%" }}
+          >
             <button
               className={
                 "btn fw-semibold px-4 py-2 shadow-sm admin-tab-btn " +
                 (tab === "dashboard" ? "active" : "")
               }
+              style={{
+                background:
+                  tab === "dashboard" ? "#0a6efd" : "rgba(255,255,255,0.10)",
+                color: tab === "dashboard" ? "#fff" : "#e3eaff",
+                border:
+                  tab === "dashboard"
+                    ? "2px solid #0a6efd"
+                    : "2px solid #e3eaff33",
+                borderRadius: 10,
+                fontWeight: 700,
+                fontSize: 18,
+                transition: "background 0.2s, color 0.2s, border 0.2s",
+                boxShadow: tab === "dashboard" ? "0 2px 8px #0a6efd33" : "none",
+              }}
               onClick={() => setTab("dashboard")}
               type="button"
             >
@@ -325,6 +353,20 @@ const Admin = () => {
                 "btn fw-semibold px-4 py-2 shadow-sm admin-tab-btn " +
                 (tab === "reviews" ? "active" : "")
               }
+              style={{
+                background:
+                  tab === "reviews" ? "#ffc107" : "rgba(255,255,255,0.10)",
+                color: tab === "reviews" ? "#222" : "#e3eaff",
+                border:
+                  tab === "reviews"
+                    ? "2px solid #ffc107"
+                    : "2px solid #e3eaff33",
+                borderRadius: 10,
+                fontWeight: 700,
+                fontSize: 18,
+                transition: "background 0.2s, color 0.2s, border 0.2s",
+                boxShadow: tab === "reviews" ? "0 2px 8px #ffc10733" : "none",
+              }}
               onClick={() => setTab("reviews")}
               type="button"
             >
@@ -335,6 +377,18 @@ const Admin = () => {
                 "btn fw-semibold px-4 py-2 shadow-sm admin-tab-btn " +
                 (tab === "users" ? "active" : "")
               }
+              style={{
+                background:
+                  tab === "users" ? "#1abc9c" : "rgba(255,255,255,0.10)",
+                color: tab === "users" ? "#fff" : "#e3eaff",
+                border:
+                  tab === "users" ? "2px solid #1abc9c" : "2px solid #e3eaff33",
+                borderRadius: 10,
+                fontWeight: 700,
+                fontSize: 18,
+                transition: "background 0.2s, color 0.2s, border 0.2s",
+                boxShadow: tab === "users" ? "0 2px 8px #1abc9c33" : "none",
+              }}
               onClick={() => setTab("users")}
               type="button"
             >
